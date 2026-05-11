@@ -90,6 +90,7 @@ Since the project runs on a low-spec VPS, several optimizations are applied:
 - Minimal container footprint
 - No auto-scaling to reduce cost
 - Lightweight system monitoring
+- Limitation RAM, CPU, unless-stopped
 
 ---
 
