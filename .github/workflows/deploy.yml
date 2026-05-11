@@ -37,11 +37,16 @@ jobs:
             docker stop devhire-container || true
             docker rm devhire-container || true
 
-            echo "🚀 Starting new container..."
+            echo "🚀 Starting new container with resource limits..."
+
             docker run -d \
               -p 3000:80 \
               --name devhire-container \
+              --memory="256m" \
+              --cpus="0.5" \
+              --restart unless-stopped \
+              -e NODE_ENV=production \
               devhire-app
 
-            echo "✅ Deploy finished!"
+            echo "✅ Deploy finished successfully!"
 
