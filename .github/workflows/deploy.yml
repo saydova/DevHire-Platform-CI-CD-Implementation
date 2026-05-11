@@ -1,0 +1,47 @@
+name: Deploy DevHire
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: |
+            echo "🚀 Starting deploy..."
+
+            cd /var/www/devhire || mkdir -p /var/www/devhire && cd /var/www/devhire
+
+            if [ ! -d ".git" ]; then
+              git clone git@github.com:saydova/DevHire-Platform-CI-CD-Implementation.git .
+            else
+              git pull origin main
+            fi
+
+            echo "🐳 Building Docker image..."
+            docker build -t devhire-app .
+
+            echo "🛑 Stopping old container..."
+            docker stop devhire-container || true
+            docker rm devhire-container || true
+
+            echo "🚀 Starting new container..."
+            docker run -d \
+              -p 3000:80 \
+              --name devhire-container \
+              devhire-app
+
+            echo "✅ Deploy finished!"
+
