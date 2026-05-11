@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DevHire - Talent Directory</title>
+
+<style>
+:root {
+  --bg:#0f172a;
+  --card:#1e293b;
+  --primary:#38bdf8;
+  --accent:#22c55e;
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+  --radius:14px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
+body{background:var(--bg);color:var(--text);}
+
+/* HEADER */
+header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:20px 40px;background:#020617;border-bottom:1px solid #1e293b;
+}
+
+.btn{
+  padding:10px 16px;border:none;border-radius:var(--radius);
+  cursor:pointer;font-weight:500;
+  transition:.2s;
+}
+.btn:hover{opacity:.9}
+.btn-primary{background:var(--primary);color:#000;}
+.btn-success{background:var(--accent);color:#000;}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+  padding-bottom:100px;
+}
+
+.hero{text-align:center;margin-bottom:30px;}
+.hero h2{font-size:28px;margin-bottom:10px;}
+.hero p{color:var(--muted);margin-bottom:20px;}
+
+.search{
+  width:100%;max-width:420px;padding:12px;
+  border-radius:var(--radius);border:none;
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+
+@media (max-width: 1024px){
+  .grid{grid-template-columns:repeat(2,1fr);}
+}
+
+@media (max-width: 640px){
+  .grid{grid-template-columns:1fr;}
+  header{padding:16px;}
+  .container{padding:16px;}
+}
+
+/* CARD */
+.card{
+  background:var(--card);
+  padding:20px;
+  border-radius:var(--radius);
+  transition:all .2s ease;
+  cursor:pointer;
+  border:1px solid transparent;
+}
+.card:hover{
+  transform:translateY(-4px);
+  border:1px solid var(--primary);
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+}
+
+.role{font-size:13px;color:var(--primary);margin:6px 0;}
+.skills{font-size:13px;color:var(--muted);}
+.experience{
+  font-size:12px;
+  color:#cbd5f5;
+  margin-top:6px;
+}
+
+/* PAGINATION */
+.pagination{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  padding:14px;
+  background:rgba(15,23,42,0.95);
+  backdrop-filter:blur(6px);
+  border-top:1px solid #1e293b;
+}
+
+.page-btn{
+  padding:8px 12px;
+  border:none;
+  border-radius:10px;
+  background:#1e293b;
+  color:var(--text);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:.2s;
+  min-width:38px;
+}
+
+.page-btn:hover{
+  background:#334155;
+}
+
+.page-btn.active{
+  background:var(--primary);
+  color:#000;
+}
+
+/* MODAL (UNCHANGED ORIGINAL) */
+.modal{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(2,6,23,0.7);
+  backdrop-filter:blur(8px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease;
+}
+
+.modal.active{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.modal-content{
+  width:100%;
+  max-width:440px;
+  padding:28px;
+  border-radius:20px;
+  position:relative;
+  background:rgba(15,23,42,0.85);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.08);
+  transform:translateY(20px) scale(.95);
+  opacity:0;
+  transition:all .25s ease;
+}
+
+.modal.active .modal-content{
+  transform:translateY(0) scale(1);
+  opacity:1;
+}
+
+.close{
+  position:absolute;
+  right:14px;
+  top:10px;
+  font-size:20px;
+  cursor:pointer;
+  color:var(--muted);
+}
+.close:hover{color:#fff}
+
+#detailName{font-size:22px;font-weight:600;}
+#detailRole{color:var(--primary);font-size:13px;margin-top:4px;}
+#detailExperience{font-size:12px;color:#cbd5f5;margin-top:6px;}
+#detailSkills{margin:12px 0;font-size:13px;color:var(--muted);}
+#detailBio{font-size:14px;line-height:1.6;margin-bottom:18px;}
+
+#detailContact{
+  display:block;
+  text-align:center;
+  padding:12px;
+  background:var(--primary);
+  color:#000;
+  border-radius:12px;
+  font-weight:600;
+  text-decoration:none;
+  transition:.2s;
+}
+#detailContact:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 20px rgba(56,189,248,.3);
+}
+
+input,textarea{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  background:#020617;
+  color:var(--text);
+  border:1px solid #1e293b;
+}
+
+#submitTalent{
+  width:100%;
+  margin-top:14px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>DevHire</h1>
+  <button class="btn btn-primary" id="openFormBtn">Register</button>
+</header>
+
+<div class="container">
+  <section class="hero">
+    <h2>Hire Top Developers Instantly</h2>
+    <p>Find skilled talent and contact them directly.</p>
+    <input id="searchInput" class="search" placeholder="Search..." />
+  </section>
+
+  <section id="talentList" class="grid"></section>
+</div>
+
+<div id="pagination" class="pagination"></div>
+
+<!-- DETAIL MODAL -->
+<div id="detailModal" class="modal">
+  <div class="modal-content">
+    <span class="close" data-close="detailModal">&times;</span>
+    <h2 id="detailName"></h2>
+    <div id="detailRole"></div>
+    <div id="detailExperience"></div>
+    <div id="detailSkills"></div>
+    <p id="detailBio"></p>
+    <a id="detailContact" target="_blank">Contact</a>
+  </div>
+</div>
+
+<!-- FORM MODAL -->
+<div id="formModal" class="modal">
+  <div class="modal-content">
+    <span class="close" data-close="formModal">&times;</span>
+    <h2>Register Talent</h2>
+
+    <input id="name" placeholder="Full Name"/>
+    <input id="role" placeholder="Role"/>
+    <input id="experience" placeholder="Experience (years)"/>
+    <input id="skills" placeholder="Skills (comma separated)"/>
+    <textarea id="bio" placeholder="Short Bio"></textarea>
+    <input id="contact" placeholder="Contact (portfolio / github / linkedin)"/>
+
+    <button id="submitTalent" class="btn btn-success">Submit</button>
+  </div>
+</div>
+
+<script src="data.js"></script>
+
+<script>
+const state = {
+  talents: [...talentsData],
+  filtered: [...talentsData],
+  page:1,
+  limit:15
+};
+
+const el=id=>document.getElementById(id);
+
+const safeSkills = skills => Array.isArray(skills) ? skills : [];
+const formatExp = exp => exp || "-";
+
+const render=()=>{
+  const start=(state.page-1)*state.limit;
+  const data=state.filtered.slice(start,start+state.limit);
+
+  el("talentList").innerHTML=data.map(t=>`
+    <div class="card" data-id="${t.id}">
+      <h3>${t.name}</h3>
+      <div class="role">${t.role}</div>
+      <div class="skills">${safeSkills(t.skills).join(", ")}</div>
+      <div class="experience">${formatExp(t.experience)}</div>
+    </div>
+  `).join("");
+
+  renderPagination();
+};
+
+/* ===== ONLY PAGINATION FIXED ===== */
+const renderPagination=()=>{
+  const totalPages=Math.ceil(state.filtered.length/state.limit);
+  let html="";
+
+  const current = state.page;
+
+  const start = Math.max(1, current - 1);
+  const fixedStart = Math.max(1, Math.min(start, totalPages - 2));
+
+  const pages = [];
+  for(let i=fixedStart;i<=Math.min(totalPages, fixedStart+2);i++){
+    pages.push(i);
+  }
+
+  html += `<button class="page-btn" data-page="${current-1}">‹</button>`;
+
+  pages.forEach(p=>{
+    html += `<button class="page-btn ${p===current?'active':''}" data-page="${p}">${p}</button>`;
+  });
+
+  html += `<button class="page-btn" data-page="${current+1}">›</button>`;
+
+  el("pagination").innerHTML=html;
+};
+
+document.addEventListener("click",e=>{
+  const btn = e.target.closest(".page-btn");
+  if(btn){
+    const page = +btn.dataset.page;
+    const totalPages=Math.ceil(state.filtered.length/state.limit);
+
+    if(page>=1 && page<=totalPages){
+      state.page=page;
+      render();
+    }
+  }
+
+  const card=e.target.closest(".card");
+  if(card){
+    const t=state.talents.find(x=>x.id==card.dataset.id);
+
+    el("detailName").textContent=t.name;
+    el("detailRole").textContent=t.role;
+    el("detailExperience").textContent=formatExp(t.experience);
+    el("detailSkills").textContent=safeSkills(t.skills).join(", ");
+    el("detailBio").textContent=t.bio;
+    el("detailContact").href=t.contact;
+
+    el("detailModal").classList.add("active");
+  }
+
+  if(e.target.dataset.close){
+    el(e.target.dataset.close).classList.remove("active");
+  }
+
+  if(e.target.classList.contains("modal")){
+    e.target.classList.remove("active");
+  }
+});
+
+el("openFormBtn").onclick=()=>el("formModal").classList.add("active");
+
+/* ===== UPDATED VALIDATION ONLY ===== */
+el("submitTalent").onclick = () => {
+  const name = el("name").value.trim();
+  const role = el("role").value.trim();
+  const exp = el("experience").value.trim();
+  const skillsRaw = el("skills").value;
+  const bio = el("bio").value.trim();
+  const contact = el("contact").value.trim();
+
+  const errors = [];
+
+  if (!name) errors.push("Name must be filled in");
+  if (!role) errors.push("Role must be filled in");
+  if (!contact) errors.push("Contact must be filled in");
+
+  if (exp) {
+    const num = Number(exp);
+    if (isNaN(num) || num < 0) {
+      errors.push("Experience must be number (>= 0)");
+    }
+  }
+
+  const skills = skillsRaw.split(",").map(s => s.trim()).filter(Boolean);
+  if (skills.length === 0) {
+    errors.push("Minimum 1 skill must be filled");
+  }
+
+  if (bio && bio.length < 10) {
+    errors.push("Bio minimum 10 characters");
+  }
+
+  if (contact) {
+    const isUrl = /^(https?:\/\/)/.test(contact);
+
+    if ( !isUrl) {
+      errors.push("Contact must be valid URL");
+    }
+  }
+
+  if (errors.length > 0) {
+    alert("Validation Error:\n- " + errors.join("\n- "));
+    return;
+  }
+
+  const t={
+    id: Date.now(),
+    name,
+    role,
+    experience: exp ? exp + " Years" : "-",
+    skills,
+    bio,
+    contact
+  };
+
+  state.talents.unshift(t);
+  state.filtered=state.talents;
+  state.page=1;
+
+  render();
+  el("formModal").classList.remove("active");
+};
+
+el("searchInput").oninput=e=>{
+  const q=e.target.value.toLowerCase();
+
+  state.filtered=state.talents.filter(t=>
+    (t.name||"").toLowerCase().includes(q) ||
+    (t.role||"").toLowerCase().includes(q) ||
+    safeSkills(t.skills).join(" ").toLowerCase().includes(q) ||
+    (t.experience||"").toLowerCase().includes(q)
+  );
+
+  state.page=1;
+  render();
+};
+
+render();
+</script>
+
+</body>
+</html>
