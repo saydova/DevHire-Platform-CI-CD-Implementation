@@ -4,13 +4,6 @@ DevHire Platform is a simple web application that serves as a developer talent d
 
 The main focus of this project is to implement a complete deployment pipeline using lightweight infrastructure and production-like practices.
 
----
-
-## 🌐 Live Demo
-https://dacoders.web.id/
-
----
-
 ## 🧩 Features
 - Display list of developer talents
 - Search talent by skill, role, or experience
